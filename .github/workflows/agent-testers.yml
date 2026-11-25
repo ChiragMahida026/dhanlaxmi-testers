@@ -320,6 +320,8 @@ jobs:
           APP_SOURCE: ${{ inputs.source_repo || github.repository }}
           APP_REF: ${{ inputs.ref }}
           APP_COMMIT: ${{ needs.build-android.outputs.app_commit }}
+          DEMO_LOGIN_EMAIL: ${{ inputs.replay_traces == '' && secrets.DEMO_LOGIN_EMAIL || '' }}
+          DEMO_LOGIN_OTP: ${{ inputs.replay_traces == '' && secrets.DEMO_LOGIN_OTP || '' }}
         with:
           api-level: ${{ matrix.api }}
           target: google_apis
