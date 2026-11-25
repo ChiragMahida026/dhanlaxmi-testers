@@ -97,6 +97,9 @@ case "${MAP:-none}" in
     # Demo login for the agent, from repo secrets. Outside results/, so it is never uploaded.
     if [ -n "${DEMO_LOGIN_EMAIL:-}" ]; then
       printf 'email: %s\ncode: %s\n' "$DEMO_LOGIN_EMAIL" "${DEMO_LOGIN_OTP:-}" > login.txt
+      # One shared account: sign in one phone at a time (4 min apart, in the order of android_personas)
+      IDX=$(echo "${ANDROID_PERSONAS:-}" | tr ',' '\n' | tr -d ' ' | grep -nx "$PERSONA" | cut -d: -f1)
+      [ -n "$IDX" ] && [ "$IDX" -gt 1 ] && { echo "Waiting $(( (IDX - 1) * 240 ))s before sign-in"; sleep $(( (IDX - 1) * 240 )); }
     fi
     PATH="$PWD/scripts/android/shim:$PATH" claude -p "Read $BRIEF and personas.json, then do the mission until the final report. PERSONA=$PERSONA PLATFORM=android APP_ID=$APP_ID. $SETTINGS Report anything that does not fit this screen (cut text, off-screen buttons, broken layout)." \
       --model "${MODEL:-sonnet}" --max-turns 400 --output-format json --allowedTools "$ALLOWED" \
